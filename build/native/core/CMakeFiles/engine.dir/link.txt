@@ -1,0 +1,2 @@
+/usr/bin/ar qc libengine.a CMakeFiles/engine.dir/src/channel.cpp.o CMakeFiles/engine.dir/src/dsp.c.o CMakeFiles/engine.dir/src/filters.cpp.o CMakeFiles/engine.dir/src/fixed_point_math.c.o CMakeFiles/engine.dir/src/modulator.cpp.o CMakeFiles/engine.dir/src/receiver.cpp.o CMakeFiles/engine.dir/src/utils.cpp.o
+/usr/bin/ranlib libengine.a
