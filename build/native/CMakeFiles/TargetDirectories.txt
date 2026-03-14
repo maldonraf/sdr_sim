@@ -1,8 +1,0 @@
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/CMakeFiles/edit_cache.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/CMakeFiles/rebuild_cache.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/core/CMakeFiles/engine.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/core/CMakeFiles/edit_cache.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/core/CMakeFiles/rebuild_cache.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/tests/CMakeFiles/tests.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/tests/CMakeFiles/edit_cache.dir
-/mnt/d/Sync/Main/Projects/SDR Simulator/sdr_sim/build/native/tests/CMakeFiles/rebuild_cache.dir
