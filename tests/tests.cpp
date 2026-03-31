@@ -51,6 +51,18 @@ void test_real_ber() {
     assert(ber_1 == 0.25);
 }
 
+void test_db_to_linear() {
+    assert(db_to_linear(3) - 1.99526 < 0.01);
+    assert(db_to_linear(-3) - 0.5 < 0.01);
+    assert(db_to_linear(10) == 10);
+}
+
+void test_calc_theoretical_ber() {
+    assert(calc_theoretical_ber(MOD_BPSK, 0) - 0.0787 < 0.01);
+    assert(calc_theoretical_ber(MOD_QPSK, 0) - 0.0787 < 0.01);
+    assert(calc_theoretical_ber(MOD_QPSK, 10) - 3.87e-6 < 0.01);
+}
+
 int main() {
     test_q_function();
     printf("Check PASS: Q function.\n");
@@ -58,6 +70,9 @@ int main() {
     printf("Check PASS: PRBS-31 bit gen.\n");
     test_real_ber();
     printf("Check PASS: BER calculation.\n");
-
+    test_db_to_linear();
+    printf("Check PASS: dB to linear.\n");
+    test_calc_theoretical_ber();
+    printf("Check PASS: Theoretical BER.\n");
     return 0;
 }

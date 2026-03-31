@@ -8,6 +8,20 @@ Includes:
 #include "utils.h"
 #include <math.h>
 
+double db_to_linear(double db) {
+    /*
+    * @brief Converts dB to linear.
+    *
+    * linear = 10^(eb_n0_db / 10).
+    * Divisor is 10 (power ratio), not 20 (amplitude ratio).
+    *
+    * @param db Input (power) in decibels.
+    * @return Linear ratio.
+    */
+
+    return pow(10, db / 10);
+}
+
 double q_function(double x) {
     /*
     * @brief Computes Q-function.
@@ -88,4 +102,28 @@ double calc_real_ber(const uint8_t *a, const uint8_t *b, size_t n_bits) {
     }
 
     return (double)total_errors / (double)n_bits;
+}
+
+double calc_theoretical_ber(Modulation modulation, double eb_n0_db) {
+    /*
+    * @brief Gives analytical BER for a given modulation scheme at some power level.
+    * 
+    * BPSK:  BER = Q(sqrt(2 * Eb/N0))
+    * QPSK:  BER = Q(sqrt(2 * Eb/N0))
+    * 
+    * @param[in] modulation  Modulation (MOD_BPSK, MOD_QPSK).
+    * @param[in] eb_n0_db    Eb/N0 in decibels.
+    * @return                Theoretical BER in [0.0, 1.0] (-1.0 if invalid).
+    *
+    * @see https://www.gaussianwaves.com/2010/04/performance-comparison-of-digital-modulation-techniques-2/
+    */
+    double eb_n0_linear = db_to_linear(eb_n0_db);
+
+    switch (modulation) {
+        case MOD_BPSK:
+        case MOD_QPSK:
+            return q_function(sqrt(2.0 * eb_n0_linear));
+        default:
+            return -1.0;
+    }
 }
