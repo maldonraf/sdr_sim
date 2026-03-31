@@ -63,6 +63,10 @@ void test_calc_theoretical_ber() {
     assert(calc_theoretical_ber(MOD_QPSK, 10) - 3.87e-6 < 0.01);
 }
 
+void test_modulators() {
+    
+}
+
 int main() {
     test_q_function();
     printf("Check PASS: Q function.\n");
@@ -74,5 +78,7 @@ int main() {
     printf("Check PASS: dB to linear.\n");
     test_calc_theoretical_ber();
     printf("Check PASS: Theoretical BER.\n");
+    test_modulators();
+    printf("Check PASS: Modulator");
     return 0;
 }
