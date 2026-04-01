@@ -2,8 +2,11 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <stdlib.h>
 
 #include "utils.h"
+#include "modulator.h"
+#include "channel.h"
 
 void test_q_function() {
     // === Test value outputs ===
@@ -64,7 +67,25 @@ void test_calc_theoretical_ber() {
 }
 
 void test_modulators() {
-    
+    // TBD
+}
+
+void test_e2e() {
+    uint8_t  sps            = 2;
+    uint32_t bit_count      = 128;
+    cf32_t  *symbol_buffer  = (cf32_t *)calloc(bit_count * sps, sizeof(cf32_t)); //assumes 1 bit per symbol
+    uint8_t *byte_buffer    = (uint8_t *)calloc(bit_count / 8, sizeof(uint8_t));
+
+    prbs31_bit_gen(byte_buffer, bit_count, 0x7FFFFFFF);
+    modulate_bpsk(symbol_buffer, byte_buffer, bit_count, sps);
+    awgn_channel(symbol_buffer, bit_count * sps, 10, sps);
+
+    // for (size_t i = 0; i < bit_count * sps; i++) {
+    //     printf("%f,%f\n", symbol_buffer[i].re, symbol_buffer[i].im);
+    // }
+
+    free(symbol_buffer);
+    free(byte_buffer);
 }
 
 int main() {
@@ -79,6 +100,8 @@ int main() {
     test_calc_theoretical_ber();
     printf("Check PASS: Theoretical BER.\n");
     test_modulators();
-    printf("Check PASS: Modulator");
+    printf("Check PASS: Modulator.\n");
+    test_e2e();
+    printf("Check PASS: End-to-end test.\n");
     return 0;
 }
