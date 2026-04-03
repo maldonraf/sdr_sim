@@ -71,21 +71,60 @@ void test_modulators() {
 }
 
 void test_e2e() {
-    uint8_t  sps            = 2;
-    uint32_t bit_count      = 128;
-    cf32_t  *symbol_buffer  = (cf32_t *)calloc(bit_count * sps, sizeof(cf32_t)); //assumes 1 bit per symbol
-    uint8_t *byte_buffer    = (uint8_t *)calloc(bit_count / 8, sizeof(uint8_t));
+    const uint8_t  sps       = 16;
+    const uint32_t bit_count = 4096;
+    const double   eb_n0_db  = 0.0;
+
+    cf32_t  *symbol_buffer = (cf32_t *)calloc(bit_count * sps, sizeof(cf32_t));
+    uint8_t *byte_buffer   = (uint8_t *)calloc(bit_count / 8,  sizeof(uint8_t));
+    uint8_t *rx_buffer     = (uint8_t *)calloc(bit_count / 8,  sizeof(uint8_t));
+
+    if (!symbol_buffer || !byte_buffer || !rx_buffer) {
+        free(symbol_buffer);
+        free(byte_buffer);
+        free(rx_buffer);
+        return;
+    }
 
     prbs31_bit_gen(byte_buffer, bit_count, 0x7FFFFFFF);
     modulate_bpsk(symbol_buffer, byte_buffer, bit_count, sps);
-    awgn_channel(symbol_buffer, bit_count * sps, 10, sps);
+    awgn_channel(symbol_buffer, bit_count * sps, eb_n0_db, sps);
 
-    // for (size_t i = 0; i < bit_count * sps; i++) {
-    //     printf("%f,%f\n", symbol_buffer[i].re, symbol_buffer[i].im);
-    // }
+    for (size_t i = 0; i < bit_count; i++) {
+        size_t sample_idx = i * sps + (sps / 2); // center of symbol period ?
+        uint8_t bit = (symbol_buffer[sample_idx].re > 0.0f) ? 0 : 1;
+        if (bit) {
+            rx_buffer[i / 8] |= (1 << (7 - (i % 8)));
+        }
+    }
+
+    if (1) { //(bit_count * sps <= 1048) {
+         printf("Index: Symbol (Real, Imag)\n");
+        for (size_t i = 0; i < bit_count / 8; i++) {
+            for (int b = 7; b >= 0; b--) {
+                printf("%i", (byte_buffer[i] >> b) & 0x1);
+            }
+            printf(" / ");
+            for (int b = 7; b >= 0; b--) {
+                size_t bit_idx = i * 8 + (7 - b);
+                printf("(%02f) ", symbol_buffer[bit_idx * sps].re);
+            }
+            printf("\n");
+        }
+    }
+
+    double ber_measured    = calc_real_ber(byte_buffer, rx_buffer, bit_count);
+    double ber_theoretical = calc_theoretical_ber(MOD_BPSK, eb_n0_db);
+
+    // find ideal margin - for now 10x
+    assert(ber_measured < ber_theoretical * 10.0);
+
+    printf("E2E BER Measured/Theoretical: %.2e / %.2e\n",
+           ber_measured, ber_theoretical);
 
     free(symbol_buffer);
     free(byte_buffer);
+    free(rx_buffer);
 }
 
 int main() {
